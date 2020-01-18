@@ -1,0 +1,21 @@
+<idea-plugin>
+    <id>top.imyzt.plugins.PojoToFormData</id>
+    <name>PojoToFormData</name>
+    <vendor email="imyzt01@gmail.com" url="https://github.com/imyzt">imyzt</vendor>
+
+    <description><![CDATA[
+    将简单POJO类转换成FormData,便于编写接口文档和Postman请求<br>
+    <em>fork me on <a href="https://github.com/imyzt/pojo-to-form-data">github</a></em>
+    ]]></description>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <action id="top.imyzt.plugins" class="top.imyzt.plugins.PojoToFormData" text="PojoToFormData" description="将POJO类转换为逗号分隔的字符串">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="shift meta N"/>
+        </action>
+    </actions>
+</idea-plugin>

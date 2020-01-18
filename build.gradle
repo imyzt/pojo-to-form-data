@@ -1,0 +1,33 @@
+plugins {
+    id 'org.jetbrains.intellij' version '0.4.15'
+}
+
+Properties properties = new Properties()
+properties.load project.rootProject.file('local.properties').newDataInputStream()
+def IJ_REPO_TOKEN = properties.getProperty("IJ_REPO_TOKEN")
+
+group 'top.imyzt.plugins'
+version '1.1'
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version '2019.2'
+    plugins "java"
+}
+
+patchPluginXml {
+    changeNotes """
+<div>
+将简单POJO类转换成FormData,便于编写接口文档和Postman请求<br>
+<em>fork me on <a href="https://github.com/imyzt/pojo-to-form-data">github</a></em>
+  <p>1.0</p> 
+  <ul> 
+    <li>支持将简单对象生成k:v通过逗号分割的字符串.包含引用类型时提示报错信息</li> 
+  </ul>
+  <p>1.1</p> 
+  <ul> 
+    <li>bugfix:修复char包装类型错写的bug</li> 
+  </ul>
+</div>
+"""
+}
