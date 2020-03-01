@@ -1,20 +1,30 @@
 <idea-plugin>
     <id>top.imyzt.plugins.PojoToFormData</id>
     <name>PojoToFormData</name>
-    <vendor email="imyzt01@gmail.com" url="https://github.com/imyzt">imyzt</vendor>
+    <vendor email="imyzt01@gmail.com" url="https://github.com/imyzt/pojo-to-form-data">imyzt</vendor>
+    <depends>com.intellij.modules.java</depends>
 
     <description><![CDATA[
-    将简单POJO类转换成FormData,便于编写接口文档和Postman请求<br>
-    <em>fork me on <a href="https://github.com/imyzt/pojo-to-form-data">github</a></em>
+   <p>A simple plugin for converting Java bean to FormData</p>
+   <p>git: https://github.com/imyzt/pojo-to-form-data</p>
+   <p>Support Java basic data types.</p>
+   <p>Support String And Date.</p>
     ]]></description>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
     </extensions>
 
+    <change-notes><![CDATA[
+         <li>1.0 - init commit.</li>
+         <li>1.1 - 修复char包装类型错写的bug.</li>
+         <li>1.2 - 调整生成策略, 直接排除不支持的类型.</li>
+    ]]>
+    </change-notes>
+
     <actions>
-        <action id="top.imyzt.plugins" class="top.imyzt.plugins.PojoToFormData" text="PojoToFormData" description="将POJO类转换为逗号分隔的字符串">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        <action id="top.imyzt.plugins" class="top.imyzt.plugins.PojoToFormData" text="PojoToFormData" description="Converting java bean to formData">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <keyboard-shortcut keymap="$default" first-keystroke="shift meta N"/>
         </action>
     </actions>

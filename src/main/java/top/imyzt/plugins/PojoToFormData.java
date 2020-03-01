@@ -21,6 +21,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.intellij.notification.NotificationType.*;
+
 /**
  * Pojo To FormData
  * @author imyzt
@@ -29,6 +31,8 @@ public class PojoToFormData extends AnAction {
 
     private static final NotificationGroup NOTIFICATION_GROUP =
             new NotificationGroup("pojo2formData.NotificationGroup", NotificationDisplayType.BALLOON, true);
+
+    private static final String COPIED_SUCCESS = "Copied to pasteboard.";
 
     @NonNls
     private static final Map<String, Object> PRIMITIVE_TYPE_MAP = new HashMap<>();
@@ -64,72 +68,68 @@ public class PojoToFormData extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
 
-
         Project project = e.getProject();
         Editor editor = e.getData(CommonDataKeys.EDITOR);
         PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
 
+        if (Objects.isNull(psiFile) || Objects.isNull(editor)) {
+            notification(project, "Not in editing area", ERROR);
+            return;
+        }
+
         PsiElement elementAt = psiFile.findElementAt(editor.getCaretModel().getOffset());
         PsiClass selectedClass = PsiTreeUtil.getContextOfType(elementAt, PsiClass.class);
 
+        if (selectedClass == null) {
+            notification(project, "Attribute is empty", ERROR);
+            return;
+        }
 
-        try {
-            Map<String, Object> fields = getFields(selectedClass);
-            String join = Joiner.on("\n").withKeyValueSeparator(":").join(fields);
-            StringSelection selection = new StringSelection(join);
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(selection, selection);
+        Map<String, Object> fields = new LinkedHashMap<>();
 
-            showMsg("已拷贝至粘贴板", project, NotificationType.INFORMATION);
+        StringBuilder notSupportType = new StringBuilder();
+        for (PsiField field : selectedClass.getAllFields()) {
+            // 支持的数据类型
+            Object zeroValue = getValue(field.getType());
+            if (Objects.nonNull(zeroValue)) {
+                fields.put(field.getName(), zeroValue);
+            } else {
+                notSupportType.append(",").append(field.getName());
+            }
+        }
 
-        } catch (ToFormDataException ex) {
-            showMsg(ex.getMsg(), project, NotificationType.ERROR);
+        String join = Joiner.on("\n").withKeyValueSeparator(":").join(fields);
+        StringSelection selection = new StringSelection(join);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
+
+        if (notSupportType.length() > 0) {
+            notification(project, COPIED_SUCCESS + " Exclude fields " + notSupportType.substring(1), WARNING);
+        } else {
+            notification(project, COPIED_SUCCESS, INFORMATION);
         }
     }
 
-    private static Map<String, Object> getFields(PsiClass psiClass) {
-        Map<String, Object> map = new LinkedHashMap<>();
-
-        if (psiClass == null) {
-            return map;
-        }
-
-        for (PsiField field : psiClass.getAllFields()) {
-            map.put(field.getName(), typeResolve(field.getType()));
-        }
-
-        return map;
-    }
-
-    private static Object typeResolve(PsiType type) {
-
+    private Object getValue(PsiType type) {
         // 原始类型
         if (type instanceof PsiPrimitiveType) {
 
             return PRIMITIVE_TYPE_MAP.get(type.getCanonicalText());
 
-            // 数组类型
-        } else if (type instanceof PsiArrayType) {
-
-            throw new ToFormDataException("包含数组类型, 建议使用JSON");
-
             // 引用类型
-        } else {
+        } else if (type instanceof PsiClassReferenceType) {
 
             // 处理字符引用
             String className = ((PsiClassReferenceType) type).getClassName();
 
             // 处理支持的引用类型
-            Object returnDefaultValue;
-            if (Objects.nonNull((returnDefaultValue =  PRIMITIVE_TYPE_MAP.get(className)))) {
-                return returnDefaultValue;
-            } else {
-                throw new ToFormDataException("包含引用类型, 建议使用JSON");
-            }
+            return PRIMITIVE_TYPE_MAP.get(className);
         }
+        return null;
     }
 
-    private static void showMsg(String msg, Project project, NotificationType notificationType) {
+
+    private static void notification(Project project, String msg, NotificationType notificationType) {
         Notification error = NOTIFICATION_GROUP.createNotification(msg, notificationType);
         Notifications.Bus.notify(error, project);
     }
