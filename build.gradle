@@ -7,7 +7,7 @@ properties.load project.rootProject.file('local.properties').newDataInputStream(
 def IJ_REPO_TOKEN = properties.getProperty("IJ_REPO_TOKEN")
 
 group 'top.imyzt.plugins'
-version '1.1'
+version '1.2'
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
@@ -27,6 +27,10 @@ patchPluginXml {
   <p>1.1</p> 
   <ul> 
     <li>bugfix:修复char包装类型错写的bug</li> 
+  </ul>
+  <p>1.2</p> 
+  <ul> 
+    <li>调整生成策略, 直接排除不支持的类型</li> 
   </ul>
 </div>
 """
