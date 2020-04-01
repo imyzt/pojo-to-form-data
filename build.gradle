@@ -7,11 +7,11 @@ properties.load project.rootProject.file('local.properties').newDataInputStream(
 def IJ_REPO_TOKEN = properties.getProperty("IJ_REPO_TOKEN")
 
 group 'top.imyzt.plugins'
-version '1.2'
+version '1.3'
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2019.2'
+    version '2019.3'
     plugins "java"
 }
 
@@ -31,6 +31,10 @@ patchPluginXml {
   <p>1.2</p> 
   <ul> 
     <li>调整生成策略, 直接排除不支持的类型</li> 
+  </ul>
+    <p>1.3</p> 
+  <ul> 
+    <li>增加转换类型, 可以选择formData或urlParam</li> 
   </ul>
 </div>
 """

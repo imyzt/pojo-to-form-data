@@ -8,12 +8,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Pojo To FormData
  * @author imyzt
  */
-public class PojoToFormData extends AnAction {
+public class PojoToUrlParam extends AnAction {
+
+
 
     @Override
     public void actionPerformed(AnActionEvent e) {
 
-        ParamUtils.paramToCopied(e, (fields) -> Joiner.on("\n").withKeyValueSeparator(":").join(fields));
+        ParamUtils.paramToCopied(e, (fields) -> Joiner.on("&").withKeyValueSeparator("=").join(fields));
 
     }
+
+
 }
